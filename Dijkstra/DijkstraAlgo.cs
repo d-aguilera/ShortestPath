@@ -5,8 +5,6 @@ namespace ShortestPath
 {
     public class DijkstraAlgo : ShortestPathAlgo
     {
-        public override event ShortPathFoundEventHandler ShortPathFound;
-
         public override void Process(Graph graph, Vertex target)
         {
             var queue = new List<Vertex>();
@@ -39,12 +37,10 @@ namespace ShortestPath
                             {
                                 current,
                             };
-                            ShortPathFound?.Invoke(this, new ShortPathFoundEventArgs(neighbor, current));
                         }
                         else if (newDistance == neighbor.DistanceToTarget)
                         {
                             neighbor.Next.Add(current);
-                            ShortPathFound?.Invoke(this, new ShortPathFoundEventArgs(neighbor, current));
                         }
                     }
                 }

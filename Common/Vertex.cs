@@ -15,7 +15,7 @@ namespace ShortestPath
         {
         }
 
-        public Vertex(int x, int y)
+        public Vertex(float x, float y)
         {
             X = x;
             Y = y;
