@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using ShortestPath;
 
@@ -11,24 +8,35 @@ namespace WindowsFormsApp
 {
     public partial class Form1 : Form
     {
-        private const int SRCCOPY = 0xCC0020;
-        private const double zoom = 60.0;
-
         private static Random random = new Random();
         private static ShortestPathAlgo algo = new DijkstraAlgo();
+        private static Context Context = new Context();
 
-        private Graph graph;
-        private Vertex target;
-        private Vertex source;
-        private GraphicsPath connectorsPath;
-        private GraphicsPath arrowsPath;
-        private GraphicsPath textLabelsPath;
-        private GraphicsPath whiteCirclesPath;
-        private GraphicsPath connectorDistancesPath;
+        private Layer[] layers;
+        private Image bitmap;
 
         public Form1()
         {
             InitializeComponent();
+
+            Context.Font = Font;
+
+            layers = new Layer[]
+            {
+                new Layer0(Context)
+                {
+                    BackColor = Color.Yellow,
+                },
+                new Layer1(Context)
+                {
+                    BackColor = Color.Blue,
+                },
+                new Layer2(Context)
+                {
+                    BackColor = Color.Transparent,
+                },
+            };
+
             Randomize();
             Recalc();
 
@@ -37,44 +45,59 @@ namespace WindowsFormsApp
 
         private void Randomize()
         {
-            graph = CreateGraph();
-            target = graph.Skip(random.Next(graph.Count)).First();
+            Context.Graph = CreateGraph();
+            Context.Target = Context.Graph.Skip(random.Next(Context.Graph.Count)).First();
         }
 
         private void Recalc()
         {
-            algo.Process(graph, target);
+            algo.Process(Context.Graph, Context.Target);
 
-            RecalcConnectors();
-            RecalcWhiteCircles();
-            RecalcTextLabels();
-            RecalcArrows();
-            RecalcConnectorDistances();
+            Context.Source = null;
 
-            Redraw();
+            var clip = new Region(ClientRectangle);
+
+            UpdateLayers(clip);
+            DrawBitmap(clip);
         }
 
-        private void Redraw()
+        private void UpdateLayers(Region clip)
         {
-            using (var g = Graphics.FromHwnd(Handle))
+            foreach (var layer in layers)
             {
-                RedrawBackground(g);
+                layer.Update(ClientSize, clip);
+            }
+
+            UpdateBitmap(clip);
+        }
+
+        private void UpdateBitmap(Region clip)
+        {
+            bitmap?.Dispose();
+            bitmap = new Bitmap(ClientSize.Width, ClientSize.Height);
+
+            using (var g = Graphics.FromImage(bitmap))
+            {
+                g.Clip = clip;
+                foreach (var layer in layers)
+                {
+                    g.DrawImage(layer.Bitmap, 0, 0);
+                }
             }
         }
 
-        private void RedrawBackground(Graphics g)
+        private void DrawBitmap(Region clip)
         {
-            g.SmoothingMode = SmoothingMode.HighQuality;
+            using (var g = Graphics.FromHwnd(Handle))
+            {
+                DrawBitmap(clip, g);
+            }
+        }
 
-            g.Clear(BackColor);
-
-            DrawConnectors(g);
-            DrawShortestPath(g);
-            DrawWhiteCircles(g);
-            DrawYellowCircle(g);
-            DrawTextLabels(g);
-            DrawArrows(g);
-            DrawConnectorDistances(g);
+        private void DrawBitmap(Region clip, Graphics g)
+        {
+            g.Clip = clip;
+            g.DrawImage(bitmap, 0, 0);
         }
 
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
@@ -85,9 +108,10 @@ namespace WindowsFormsApp
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            var g = e.Graphics;
-            g.Clip = new Region(e.ClipRectangle);
-            RedrawBackground(g);
+            var clip = new Region(e.ClipRectangle);
+
+            UpdateLayers(clip);
+            DrawBitmap(clip, e.Graphics);
         }
 
         private void Form1_MouseClick(object sender, MouseEventArgs e)
@@ -97,12 +121,14 @@ namespace WindowsFormsApp
                 return;
             }
 
-            target = FindVertex(e.X, e.Y);
+            var newTarget = FindVertex(e.X, e.Y);
 
-            if (target == null)
+            if (newTarget == null)
             {
                 return;
             }
+
+            Context.Target = newTarget;
 
             Recalc();
         }
@@ -116,265 +142,27 @@ namespace WindowsFormsApp
 
             var newSource = FindVertex(e.X, e.Y);
 
-            if (newSource == null || newSource == source)
+            if (newSource == null || newSource == Context.Source)
             {
                 return;
             }
 
-            source = newSource;
+            Context.Source = newSource;
 
-            Redraw();
+            var clip = new Region(ClientRectangle);
+
+            layers[1].Update(ClientSize, clip);
+
+            UpdateBitmap(clip);
+            DrawBitmap(clip);
         }
 
         private Vertex FindVertex(int x, int y)
         {
-            var x1 = Convert.ToInt32(x / zoom - 1);
-            var y1 = Convert.ToInt32(y / zoom - 1);
+            var x1 = Convert.ToInt32(x / Context.Zoom - 1);
+            var y1 = Convert.ToInt32(y / Context.Zoom - 1);
 
-            return graph[x1, y1];
-        }
-
-        private void DrawShortestPath(Graphics g)
-        {
-            if (source == null)
-            {
-                return;
-            }
-
-            var queue = new Queue<Vertex>();
-
-            queue.Enqueue(source);
-
-            using (var pen = new Pen(Color.Red))
-            {
-                pen.Width = 4;
-
-                while (queue.Count > 0)
-                {
-                    var current = queue.Dequeue();
-
-                    if (current.Next != null)
-                    {
-                        foreach (var next in current.Next)
-                        {
-                            var x1 = zoom + current.X * zoom;
-                            var y1 = zoom + current.Y * zoom;
-                            var x2 = zoom + next.X * zoom;
-                            var y2 = zoom + next.Y * zoom;
-
-                            g.DrawLine(pen, (float)x1, (float)y1, (float)x2, (float)y2);
-
-                            if (!queue.Contains(next))
-                            {
-                                queue.Enqueue(next);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private void RecalcArrows()
-        {
-            const double size = zoom / 8.0;
-            const double gap = zoom / 3.0;
-
-            arrowsPath = new GraphicsPath();
-
-            var stash = new Dictionary<double, SizeF[]>();
-
-            foreach (var vertex in graph.Where(v => v.Next != null))
-            {
-                foreach (var next in vertex.Next)
-                {
-                    var x1 = zoom + vertex.X * zoom;
-                    var y1 = zoom + vertex.Y * zoom;
-                    var x2 = zoom + next.X * zoom;
-                    var y2 = zoom + next.Y * zoom;
-
-                    var origin = new PointF((float)x1, (float)y1);
-
-                    var angle1 = Math.Atan2(y2 - y1, x2 - x1);
-
-                    if (!stash.ContainsKey(angle1))
-                    {
-                        var xm = gap * Math.Cos(angle1);
-                        var ym = gap * Math.Sin(angle1);
-
-                        double xa, ya;
-
-                        xa = xm + size * Math.Cos(angle1);
-                        ya = ym + size * Math.Sin(angle1);
-                        var p1 = new PointF((float)xa, (float)ya);
-
-                        var angle2 = angle1 + Math.PI * 5.0 / 6.0;
-                        xa = xm + size * Math.Cos(angle2);
-                        ya = ym + size * Math.Sin(angle2);
-                        var p2 = new PointF((float)xa, (float)ya);
-
-                        var angle3 = angle1 - Math.PI * 5.0 / 6.0;
-                        xa = xm + size * Math.Cos(angle3);
-                        ya = ym + size * Math.Sin(angle3);
-                        var p3 = new PointF((float)xa, (float)ya);
-
-                        stash.Add(angle1, new[]
-                        {
-                            new SizeF(p1),
-                            new SizeF(p2),
-                            new SizeF(p3),
-                        });
-                    }
-
-                    var offsets = stash[angle1];
-
-                    var arrow = new[]
-                    {
-                        PointF.Add(origin, offsets[0]),
-                        PointF.Add(origin, offsets[1]),
-                        PointF.Add(origin, offsets[2]),
-                    };
-
-                    arrowsPath.StartFigure();
-                    arrowsPath.AddPolygon(arrow);
-                    arrowsPath.CloseFigure();
-                }
-            }
-        }
-
-        private void DrawArrows(Graphics g)
-        {
-            g.FillPath(Brushes.Black, arrowsPath);
-        }
-
-        private void RecalcConnectorDistances()
-        {
-            const float size = 1.4f;
-            const double gap = zoom / 2.4;
-
-            var format = new StringFormat(StringFormat.GenericDefault)
-            {
-                LineAlignment = StringAlignment.Center,
-                Alignment = StringAlignment.Near,
-            };
-
-            connectorDistancesPath = new GraphicsPath();
-
-            foreach (var vertex in graph.Where(v => v.Next != null))
-            {
-                foreach (var next in vertex.Next)
-                {
-                    var x1 = zoom + vertex.X * zoom;
-                    var y1 = zoom + vertex.Y * zoom;
-                    var x2 = zoom + next.X * zoom;
-                    var y2 = zoom + next.Y * zoom;
-
-                    var angle = Math.Atan2(y2 - y1, x2 - x1);
-
-                    var length = vertex.DistanceTo(next);
-                    var x = x1 + gap * Math.Cos(angle);
-                    var y = y1 + gap * Math.Sin(angle);
-                    var origin = new PointF((float)x, (float)y);
-
-                    var matrix = new Matrix();
-                    var degrees = angle * 180.0 / Math.PI;
-                    matrix.RotateAt((float)degrees, origin);
-
-                    var path = new GraphicsPath();
-                    path.AddString(string.Format("{0:0.##}", length), Font.FontFamily, (int)Font.Style, Font.SizeInPoints * size, origin, format);
-                    path.Transform(matrix);
-
-                    connectorDistancesPath.AddPath(path, false);
-                }
-            }
-        }
-
-        private void DrawConnectorDistances(Graphics g)
-        {
-            g.FillPath(Brushes.Black, connectorDistancesPath);
-        }
-
-        private void RecalcTextLabels()
-        {
-            var format = new StringFormat(StringFormat.GenericDefault)
-            {
-                LineAlignment = StringAlignment.Center,
-                Alignment = StringAlignment.Center
-            };
-
-            textLabelsPath = new GraphicsPath();
-
-            foreach (var vertex in graph.Where(v => v.DistanceToTarget < double.MaxValue))
-            {
-                var x1 = zoom + vertex.X * zoom;
-                var y1 = zoom + vertex.Y * zoom;
-                var origin = new PointF((float)x1, (float)y1);
-                var distance = string.Format("{0:0.#}", vertex.DistanceToTarget);
-                textLabelsPath.AddString(distance, Font.FontFamily, (int)Font.Style, Font.SizeInPoints * 1.5f, origin, format);
-            }
-        }
-
-        private void DrawTextLabels(Graphics g)
-        {
-            g.FillPath(Brushes.Black, textLabelsPath);
-        }
-
-        private void DrawYellowCircle(Graphics g)
-        {
-            const double size = zoom / 2.0;
-
-            var x1 = zoom + target.X * zoom - size / 2.0;
-            var y1 = zoom + target.Y * zoom - size / 2.0;
-
-            g.FillEllipse(Brushes.Yellow, (float)x1, (float)y1, (float)size, (float)size);
-            g.DrawEllipse(Pens.Black, (float)x1, (float)y1, (float)size, (float)size);
-        }
-
-        private void RecalcWhiteCircles()
-        {
-            const double size = zoom / 2.0;
-
-            whiteCirclesPath = new GraphicsPath();
-
-            foreach (var vertex in graph)
-            {
-                var x1 = zoom + vertex.X * zoom - size / 2.0;
-                var y1 = zoom + vertex.Y * zoom - size / 2.0;
-
-                whiteCirclesPath.StartFigure();
-                whiteCirclesPath.AddEllipse((float)x1, (float)y1, (float)size, (float)size);
-                whiteCirclesPath.CloseFigure();
-            }
-        }
-
-        private void DrawWhiteCircles(Graphics g)
-        {
-            g.FillPath(Brushes.White, whiteCirclesPath);
-            g.DrawPath(Pens.Black, whiteCirclesPath);
-        }
-
-        private void RecalcConnectors()
-        {
-            connectorsPath = new GraphicsPath();
-
-            foreach (var vertex in graph.Where(v => v.Next != null))
-            {
-                foreach (var next in vertex.Next)
-                {
-                    var x1 = zoom + vertex.X * zoom;
-                    var y1 = zoom + vertex.Y * zoom;
-                    var x2 = zoom + next.X * zoom;
-                    var y2 = zoom + next.Y * zoom;
-
-                    connectorsPath.StartFigure();
-                    connectorsPath.AddLine((float)x1, (float)y1, (float)x2, (float)y2);
-                    connectorsPath.CloseFigure();
-                }
-            }
-        }
-
-        private void DrawConnectors(Graphics g)
-        {
-            g.DrawPath(Pens.Black, connectorsPath);
+            return Context.Graph[x1, y1];
         }
 
         private static Graph CreateGraph()
@@ -428,30 +216,6 @@ namespace WindowsFormsApp
             }
 
             return graph;
-        }
-
-        [DllImport("gdi32.dll")]
-        private static extern int BitBlt(IntPtr hdc, int x, int y, int cx, int cy, IntPtr hdcSrc, int x1, int y1, int rop);
-
-        private Image CopyClientWindowToImage()
-        {
-            var bmp = new Bitmap(ClientSize.Width, ClientSize.Height);
-
-            using (var bmpGraphics = Graphics.FromImage(bmp))
-            {
-                var bmpDC = bmpGraphics.GetHdc();
-
-                using (var g = Graphics.FromHwnd(Handle))
-                {
-                    var formDC = g.GetHdc();
-                    BitBlt(bmpDC, 0, 0, ClientSize.Width, ClientSize.Height, formDC, 0, 0, SRCCOPY);
-                    g.ReleaseHdc(formDC);
-                }
-
-                bmpGraphics.ReleaseHdc(bmpDC);
-            }
-
-            return bmp;
         }
     }
 }
