@@ -7,10 +7,9 @@ namespace WindowsFormsApp
 {
     public class Layer0 : Layer
     {
-        public override void Update()
+        public Layer0(GraphicsController controller) : base(controller)
         {
             BackColor = Controller.Context.BackColor();
-            base.Update();
         }
 
         protected override void Draw(Graphics g)

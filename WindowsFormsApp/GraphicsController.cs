@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Threading;
 
 namespace WindowsFormsApp
 {
-    public class GraphicsController : IDisposable
+    public class GraphicsController : IDisposable, IComponent
     {
         public Context Context { get; }
 
@@ -17,36 +18,32 @@ namespace WindowsFormsApp
         public GraphicsController(Context context)
         {
             Context = context;
+
+            var width = Context.Graph.Max(v => v.X) * Context.Zoom + 2.0 * Context.Zoom;
+            var height = Context.Graph.Max(v => v.Y) * Context.Zoom + 2.0 * Context.Zoom;
+            BitmapSize = new Size((int)width, (int)height);
+
             Layers = new List<Layer>();
         }
 
         public void AddLayer(Layer layer)
         {
-            layer.Controller = this;
             Layers.Add(layer);
         }
 
         public void UpdateLayers()
         {
-            if (BitmapSize == Size.Empty)
-            {
-                var width = Context.Graph.Max(v => v.X) * Context.Zoom + 2.0 * Context.Zoom;
-                var height = Context.Graph.Max(v => v.Y) * Context.Zoom + 2.0 * Context.Zoom;
-                BitmapSize = new Size((int)width, (int)height);
-            }
-
-            var countdown = new CountdownEvent(Layers.Count);
+            var handles = new List<WaitHandle>();
 
             foreach (var layer in Layers)
             {
-                ThreadPool.QueueUserWorkItem(_ =>
-                {
-                    layer.Update();
-                    countdown.Signal();
-                });
+                handles.Add(layer.UpdateAsync());
             }
 
-            countdown.Wait();
+            foreach (var handle in handles)
+            {
+                handle.WaitOne();
+            }
 
             UpdateBitmap();
         }
@@ -77,5 +74,22 @@ namespace WindowsFormsApp
             Bitmap?.Dispose();
             Bitmap = null;
         }
+
+        #region IComponent
+
+        ISite IComponent.Site { get; set; }
+
+        event EventHandler IComponent.Disposed
+        {
+            add
+            {
+            }
+
+            remove
+            {
+            }
+        }
+
+        #endregion
     }
 }

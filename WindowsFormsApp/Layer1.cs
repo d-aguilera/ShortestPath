@@ -8,6 +8,10 @@ namespace WindowsFormsApp
 {
     public class Layer1 : Layer
     {
+        public Layer1(GraphicsController controller) : base(controller)
+        {
+        }
+
         protected override void Draw(Graphics g)
         {
             DrawShortestPath(g);

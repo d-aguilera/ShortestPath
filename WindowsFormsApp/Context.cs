@@ -13,6 +13,5 @@ namespace WindowsFormsApp
 
         public Func<Color> BackColor { get; set; }
         public Func<Font> Font { get; set; }
-        public Func<Size> ClientSize { get; set; }
     }
 }

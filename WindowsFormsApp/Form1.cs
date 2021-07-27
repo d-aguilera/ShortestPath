@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -11,21 +12,30 @@ namespace WindowsFormsApp
         private static Random random = new Random();
         private static ShortestPathAlgo algo = new DijkstraAlgo();
         private static Context context = new Context();
-        private static GraphicsController controller = new GraphicsController(context);
+
+        private GraphicsController controller;
 
         public Form1()
         {
             InitializeComponent();
 
+            Randomize();
+
             context.BackColor = () => BackColor;
             context.Font = () => Font;
-            context.ClientSize = () => ClientSize;
 
-            controller.AddLayer(new Layer0());
-            controller.AddLayer(new Layer1());
-            controller.AddLayer(new Layer2());
+            controller = new GraphicsController(context);
+            controller.AddLayer(new Layer0(controller));
+            controller.AddLayer(new Layer1(controller));
+            controller.AddLayer(new Layer2(controller));
+            controller.AddLayer(new Layer3(controller));
+            controller.AddLayer(new Layer4(controller));
+            controller.AddLayer(new Layer5(controller));
+            controller.AddLayer(new Layer6(controller));
 
-            Randomize();
+            components = new Container();
+            components.Add(controller);
+
             Recalc();
 
             // algo.ShortPathFound += Algo_ShortPathFound;

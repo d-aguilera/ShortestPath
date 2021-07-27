@@ -54,6 +54,10 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="GraphicsController.cs" />
+    <Compile Include="Layer6.cs" />
+    <Compile Include="Layer5.cs" />
+    <Compile Include="Layer4.cs" />
+    <Compile Include="Layer3.cs" />
     <Compile Include="Layer2.cs" />
     <Compile Include="Layer1.cs" />
     <Compile Include="Layer0.cs" />
