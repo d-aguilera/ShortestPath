@@ -7,16 +7,7 @@ namespace WindowsFormsApp
 {
     public class Layer6 : Layer
     {
-        public Layer6(LayerController controller) : base(controller)
-        {
-        }
-
         protected override void Draw(Graphics g)
-        {
-            DrawConnectorDistances(g);
-        }
-
-        private void DrawConnectorDistances(Graphics g)
         {
             const float size = 1.4f;
 

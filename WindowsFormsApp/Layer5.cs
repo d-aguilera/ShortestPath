@@ -8,16 +8,7 @@ namespace WindowsFormsApp
 {
     public class Layer5 : Layer
     {
-        public Layer5(LayerController controller) : base(controller)
-        {
-        }
-
         protected override void Draw(Graphics g)
-        {
-            DrawArrows(g);
-        }
-
-        private void DrawArrows(Graphics g)
         {
             var context = Controller.Context;
             var size = context.Zoom / 8.0;

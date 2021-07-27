@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
@@ -9,11 +10,14 @@ namespace WindowsFormsApp
 {
     public class LayerController : IDisposable, IComponent
     {
+        private readonly Dictionary<string, Layer> layers = new Dictionary<string, Layer>();
+
+        public Size BitmapSize { get; }
         public Context Context { get; }
 
+        public IReadOnlyDictionary<string, Layer> Layers => new ReadOnlyDictionary<string, Layer>(layers);
+
         public Image Bitmap { get; private set; }
-        public Size BitmapSize { get; private set; }
-        public List<Layer> Layers { get; private set; }
 
         public LayerController(Context context)
         {
@@ -23,19 +27,20 @@ namespace WindowsFormsApp
             var height = Context.Graph.Max(v => v.Y) * Context.Zoom + 2.0 * Context.Zoom;
             BitmapSize = new Size((int)width, (int)height);
 
-            Layers = new List<Layer>();
+            Bitmap = new Bitmap(BitmapSize.Width, BitmapSize.Height);
         }
 
-        public void AddLayer(Layer layer)
+        public void AddLayer(string name, Layer layer)
         {
-            Layers.Add(layer);
+            layers.Add(name, layer);
+            layer.Controller = this;
         }
 
         public void UpdateLayers()
         {
             var handles = new List<WaitHandle>();
 
-            foreach (var layer in Layers)
+            foreach (var layer in layers.Values)
             {
                 handles.Add(layer.UpdateAsync());
             }
@@ -50,14 +55,10 @@ namespace WindowsFormsApp
 
         public void UpdateBitmap()
         {
-            if (Bitmap == null)
-            {
-                Bitmap = new Bitmap(BitmapSize.Width, BitmapSize.Height);
-            }
-
             using (var g = Graphics.FromImage(Bitmap))
             {
-                foreach (var layer in Layers)
+                g.Clear(Context.BackColor());
+                foreach (var layer in layers.Values)
                 {
                     g.DrawImage(layer.Bitmap, 0, 0);
                 }
@@ -66,7 +67,7 @@ namespace WindowsFormsApp
 
         public void Dispose()
         {
-            foreach (var layer in Layers)
+            foreach (var layer in layers.Values)
             {
                 layer?.Dispose();
             }

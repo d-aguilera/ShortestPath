@@ -1,43 +1,55 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
+using ShortestPath;
 
 namespace WindowsFormsApp
 {
     public class Layer0 : Layer
     {
-        public Layer0(LayerController controller) : base(controller)
-        {
-            BackColor = Controller.Context.BackColor();
-        }
-
         protected override void Draw(Graphics g)
         {
-            DrawConnectors(g);
-        }
-
-        private void DrawConnectors(Graphics g)
-        {
             var context = Controller.Context;
+
+            if (context.Source == null)
+            {
+                return;
+            }
+
+            var queue = new Queue<Vertex>(new[] { context.Source });
             var path = new GraphicsPath();
 
-            foreach (var vertex in context.Graph.Where(v => v.Next != null))
+            while (queue.Count > 0)
             {
-                foreach (var next in vertex.Next)
-                {
-                    var x1 = context.Zoom + vertex.X * context.Zoom;
-                    var y1 = context.Zoom + vertex.Y * context.Zoom;
-                    var x2 = context.Zoom + next.X * context.Zoom;
-                    var y2 = context.Zoom + next.Y * context.Zoom;
+                var current = queue.Dequeue();
 
-                    path.StartFigure();
-                    path.AddLine((float)x1, (float)y1, (float)x2, (float)y2);
-                    path.CloseFigure();
+                if (current.Next != null)
+                {
+                    foreach (var next in current.Next)
+                    {
+                        var x1 = context.Zoom + current.X * context.Zoom;
+                        var y1 = context.Zoom + current.Y * context.Zoom;
+                        var x2 = context.Zoom + next.X * context.Zoom;
+                        var y2 = context.Zoom + next.Y * context.Zoom;
+
+                        path.StartFigure();
+                        path.AddLine((float)x1, (float)y1, (float)x2, (float)y2);
+                        path.CloseFigure();
+
+                        if (!queue.Contains(next))
+                        {
+                            queue.Enqueue(next);
+                        }
+                    }
                 }
             }
 
-            g.DrawPath(Pens.Black, path);
+            using (var pen = new Pen(Color.Red))
+            {
+                pen.Width = 15f;
+                g.DrawPath(pen, path);
+            }
         }
     }
 }

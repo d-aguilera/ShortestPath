@@ -18,44 +18,10 @@ namespace WindowsFormsApp
         public Form1()
         {
             InitializeComponent();
-
             Randomize();
-
-            context.BackColor = () => BackColor;
-            context.Font = () => Font;
-
-            controller = new LayerController(context);
-            controller.AddLayer(new Layer0(controller));
-            controller.AddLayer(new Layer1(controller));
-            controller.AddLayer(new Layer2(controller));
-            controller.AddLayer(new Layer3(controller));
-            controller.AddLayer(new Layer4(controller));
-            controller.AddLayer(new Layer5(controller));
-            controller.AddLayer(new Layer6(controller));
-
-            components = new Container();
-            components.Add(controller);
-
+            InitContext();
+            InitLayers();
             Recalc();
-
-            // algo.ShortPathFound += Algo_ShortPathFound;
-        }
-
-        private void Randomize()
-        {
-            context.Graph = CreateGraph();
-            context.Target = context.Graph.Skip(random.Next(context.Graph.Count)).First();
-        }
-
-        private void Recalc()
-        {
-            algo.Process(context.Graph, context.Target);
-
-            context.Source = null;
-
-            controller.UpdateLayers();
-
-            DrawBitmap();
         }
 
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
@@ -66,9 +32,7 @@ namespace WindowsFormsApp
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            var clip = new Region(e.ClipRectangle);
-
-            DrawBitmap(clip, e.Graphics);
+            DrawBitmap(new Region(e.ClipRectangle), e.Graphics);
         }
 
         private void Form1_MouseClick(object sender, MouseEventArgs e)
@@ -106,8 +70,46 @@ namespace WindowsFormsApp
 
             context.Source = newSource;
 
-            controller.Layers[1].Update();
+            controller.Layers["shortPath"].Update();
             controller.UpdateBitmap();
+
+            DrawBitmap();
+        }
+
+        private void Randomize()
+        {
+            context.Graph = CreateGraph();
+            context.Target = context.Graph.Skip(random.Next(context.Graph.Count)).First();
+        }
+
+        private void InitContext()
+        {
+            context.BackColor = () => BackColor;
+            context.Font = () => Font;
+        }
+
+        private void InitLayers()
+        {
+            controller = new LayerController(context);
+            controller.AddLayer("shortPath", new Layer0());
+            // controller.AddLayer("segments", new Layer1());
+            controller.AddLayer("vertices", new Layer2());
+            controller.AddLayer("target", new Layer3());
+            // controller.AddLayer("vertexDistances", new Layer4());
+            // controller.AddLayer("arrows", new Layer5());
+            // controller.AddLayer("segmentLengths", new Layer6());
+
+            components = new Container();
+            components.Add(controller);
+        }
+
+        private void Recalc()
+        {
+            algo.Process(context.Graph, context.Target);
+
+            context.Source = null;
+
+            controller.UpdateLayers();
 
             DrawBitmap();
         }
@@ -154,7 +156,6 @@ namespace WindowsFormsApp
             graph.AddRange(Enumerable.Range(0, sizeY)
                 .SelectMany(y => Enumerable.Range(0, sizeX).Select(x => new Vertex(x, y))));
 
-            /*
             // remove some to create obstacles
             var obstacleOffsets = offsets
                 .Concat(new[] { -2, 2 }.Select(x => new PointF(x, 0)))
@@ -175,7 +176,6 @@ namespace WindowsFormsApp
                     graph.Remove(item);
                 }
             }
-            */
 
             // initialize neighbors
             foreach (var vertex in graph)

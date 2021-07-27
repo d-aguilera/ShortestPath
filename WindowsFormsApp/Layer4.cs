@@ -6,16 +6,7 @@ namespace WindowsFormsApp
 {
     public class Layer4 : Layer
     {
-        public Layer4(LayerController controller) : base(controller)
-        {
-        }
-
         protected override void Draw(Graphics g)
-        {
-            DrawTextLabels(g);
-        }
-
-        private void DrawTextLabels(Graphics g)
         {
             var context = Controller.Context;
             var path = new GraphicsPath();

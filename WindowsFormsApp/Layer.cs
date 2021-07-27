@@ -12,17 +12,26 @@ namespace WindowsFormsApp
         private readonly CancellationTokenSource updateLoop;
         private readonly Thread updateThread;
 
-        protected LayerController Controller { get; set; }
+        private LayerController controller;
 
-        public Image Bitmap { get; }
-        public Color BackColor { get; set; } = Color.Transparent;
+        public LayerController Controller
+        {
+            protected get => controller;
+            set
+            {
+                controller = value;
+
+                Bitmap = new Bitmap(value.BitmapSize.Width, value.BitmapSize.Height);
+
+                ControllerSet();
+            }
+        }
+
+        public Image Bitmap { get; private set; }
         public SmoothingMode SmoothingMode { get; set; } = SmoothingMode.HighQuality;
 
-        public Layer(LayerController controller)
+        public Layer()
         {
-            Controller = controller;
-            Bitmap = new Bitmap(Controller.BitmapSize.Width, Controller.BitmapSize.Height);
-
             updateStart = new AutoResetEvent(false);
             updateEnd = new AutoResetEvent(false);
             updateLoop = new CancellationTokenSource();
@@ -41,6 +50,33 @@ namespace WindowsFormsApp
             return updateEnd;
         }
 
+        public void Dispose()
+        {
+            updateLoop.Cancel();
+            updateThread.Join();
+            updateLoop.Dispose();
+            updateStart.Dispose();
+            updateEnd.Dispose();
+            Bitmap.Dispose();
+        }
+
+        protected virtual void ControllerSet()
+        {
+        }
+
+        protected virtual void UpdateInternal()
+        {
+            using (var g = Graphics.FromImage(Bitmap))
+            {
+                g.SmoothingMode = SmoothingMode;
+                g.Clear(Color.Transparent);
+
+                Draw(g);
+            }
+        }
+
+        protected abstract void Draw(Graphics g);
+
         private void UpdateLoop(object state)
         {
             var token = (CancellationToken)state;
@@ -58,28 +94,5 @@ namespace WindowsFormsApp
                 updateEnd.Set();
             }
         }
-
-        protected virtual void UpdateInternal()
-        {
-            using (var g = Graphics.FromImage(Bitmap))
-            {
-                g.SmoothingMode = SmoothingMode;
-                g.Clear(BackColor);
-
-                Draw(g);
-            }
-        }
-
-        public void Dispose()
-        {
-            updateLoop.Cancel();
-            updateThread.Join();
-            updateLoop.Dispose();
-            updateStart.Dispose();
-            updateEnd.Dispose();
-            Bitmap.Dispose();
-        }
-
-        protected abstract void Draw(Graphics g);
     }
 }

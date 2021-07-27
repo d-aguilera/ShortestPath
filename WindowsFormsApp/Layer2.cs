@@ -5,16 +5,7 @@ namespace WindowsFormsApp
 {
     public class Layer2 : Layer
     {
-        public Layer2(LayerController controller) : base(controller)
-        {
-        }
-
         protected override void Draw(Graphics g)
-        {
-            DrawWhiteCircles(g);
-        }
-
-        private void DrawWhiteCircles(Graphics g)
         {
             var context = Controller.Context;
             var size = context.Zoom / 2.0;
