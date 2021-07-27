@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using ShortestPath;
 
 namespace WindowsFormsApp
@@ -9,6 +10,9 @@ namespace WindowsFormsApp
         public Graph Graph { get; set; }
         public Vertex Target { get; set; }
         public Vertex Source { get; set; }
-        public Font Font { get; set; }
+
+        public Func<Color> BackColor { get; set; }
+        public Func<Font> Font { get; set; }
+        public Func<Size> ClientSize { get; set; }
     }
 }

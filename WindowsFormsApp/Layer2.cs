@@ -8,28 +8,25 @@ namespace WindowsFormsApp
 {
     public class Layer2 : Layer
     {
-        public Layer2(Context context) : base(context)
+        protected override void Draw(Graphics g)
         {
-            Steps = new Action<Graphics>[]
-            {
-                DrawWhiteCircles,
-                DrawYellowCircle,
-                DrawTextLabels,
-                DrawArrows,
-                DrawConnectorDistances,
-            };
+            DrawWhiteCircles(g);
+            DrawYellowCircle(g);
+            DrawTextLabels(g);
+            DrawArrows(g);
+            DrawConnectorDistances(g);
         }
 
         private void DrawWhiteCircles(Graphics g)
         {
-            var size = Context.Zoom / 2.0;
-
+            var context = Controller.Context;
+            var size = context.Zoom / 2.0;
             var path = new GraphicsPath();
 
-            foreach (var vertex in Context.Graph)
+            foreach (var vertex in context.Graph)
             {
-                var x1 = Context.Zoom + vertex.X * Context.Zoom - size / 2.0;
-                var y1 = Context.Zoom + vertex.Y * Context.Zoom - size / 2.0;
+                var x1 = context.Zoom + vertex.X * context.Zoom - size / 2.0;
+                var y1 = context.Zoom + vertex.Y * context.Zoom - size / 2.0;
 
                 path.StartFigure();
                 path.AddEllipse((float)x1, (float)y1, (float)size, (float)size);
@@ -42,10 +39,10 @@ namespace WindowsFormsApp
 
         private void DrawYellowCircle(Graphics g)
         {
-            var size = Context.Zoom / 2.0;
-
-            var x1 = Context.Zoom + Context.Target.X * Context.Zoom - size / 2.0;
-            var y1 = Context.Zoom + Context.Target.Y * Context.Zoom - size / 2.0;
+            var context = Controller.Context;
+            var size = context.Zoom / 2.0;
+            var x1 = context.Zoom + context.Target.X * context.Zoom - size / 2.0;
+            var y1 = context.Zoom + context.Target.Y * context.Zoom - size / 2.0;
 
             g.FillEllipse(Brushes.Yellow, (float)x1, (float)y1, (float)size, (float)size);
             g.DrawEllipse(Pens.Black, (float)x1, (float)y1, (float)size, (float)size);
@@ -53,21 +50,22 @@ namespace WindowsFormsApp
 
         private void DrawTextLabels(Graphics g)
         {
+            var context = Controller.Context;
+            var path = new GraphicsPath();
+
             var format = new StringFormat(StringFormat.GenericDefault)
             {
                 LineAlignment = StringAlignment.Center,
                 Alignment = StringAlignment.Center
             };
 
-            var path = new GraphicsPath();
-
-            foreach (var vertex in Context.Graph.Where(v => v.DistanceToTarget < double.MaxValue))
+            foreach (var vertex in context.Graph.Where(v => v.DistanceToTarget < double.MaxValue))
             {
-                var x1 = Context.Zoom + vertex.X * Context.Zoom;
-                var y1 = Context.Zoom + vertex.Y * Context.Zoom;
+                var x1 = context.Zoom + vertex.X * context.Zoom;
+                var y1 = context.Zoom + vertex.Y * context.Zoom;
                 var origin = new PointF((float)x1, (float)y1);
                 var distance = string.Format("{0:0.#}", vertex.DistanceToTarget);
-                path.AddString(distance, Context.Font.FontFamily, (int)Context.Font.Style, Context.Font.SizeInPoints * 1.5f, origin, format);
+                path.AddString(distance, context.Font().FontFamily, (int)context.Font().Style, context.Font().SizeInPoints * 1.5f, origin, format);
             }
 
             g.FillPath(Brushes.Black, path);
@@ -75,21 +73,22 @@ namespace WindowsFormsApp
 
         private void DrawArrows(Graphics g)
         {
-            var size = Context.Zoom / 8.0;
-            var gap = Context.Zoom / 3.0;
+            var context = Controller.Context;
+            var size = context.Zoom / 8.0;
+            var gap = context.Zoom / 3.0;
 
             var path = new GraphicsPath();
 
             var stash = new Dictionary<double, SizeF[]>();
 
-            foreach (var vertex in Context.Graph.Where(v => v.Next != null))
+            foreach (var vertex in context.Graph.Where(v => v.Next != null))
             {
                 foreach (var next in vertex.Next)
                 {
-                    var x1 = Context.Zoom + vertex.X * Context.Zoom;
-                    var y1 = Context.Zoom + vertex.Y * Context.Zoom;
-                    var x2 = Context.Zoom + next.X * Context.Zoom;
-                    var y2 = Context.Zoom + next.Y * Context.Zoom;
+                    var x1 = context.Zoom + vertex.X * context.Zoom;
+                    var y1 = context.Zoom + vertex.Y * context.Zoom;
+                    var x2 = context.Zoom + next.X * context.Zoom;
+                    var y2 = context.Zoom + next.Y * context.Zoom;
 
                     var origin = new PointF((float)x1, (float)y1);
 
@@ -146,7 +145,9 @@ namespace WindowsFormsApp
         {
             const float size = 1.4f;
 
-            var gap = Context.Zoom / 2.4;
+            var context = Controller.Context;
+            var gap = context.Zoom / 2.4;
+            var path = new GraphicsPath();
 
             var format = new StringFormat(StringFormat.GenericDefault)
             {
@@ -154,16 +155,14 @@ namespace WindowsFormsApp
                 Alignment = StringAlignment.Near,
             };
 
-            var path = new GraphicsPath();
-
-            foreach (var vertex in Context.Graph.Where(v => v.Next != null))
+            foreach (var vertex in context.Graph.Where(v => v.Next != null))
             {
                 foreach (var next in vertex.Next)
                 {
-                    var x1 = Context.Zoom + vertex.X * Context.Zoom;
-                    var y1 = Context.Zoom + vertex.Y * Context.Zoom;
-                    var x2 = Context.Zoom + next.X * Context.Zoom;
-                    var y2 = Context.Zoom + next.Y * Context.Zoom;
+                    var x1 = context.Zoom + vertex.X * context.Zoom;
+                    var y1 = context.Zoom + vertex.Y * context.Zoom;
+                    var x2 = context.Zoom + next.X * context.Zoom;
+                    var y2 = context.Zoom + next.Y * context.Zoom;
 
                     var angle = Math.Atan2(y2 - y1, x2 - x1);
 
@@ -177,7 +176,7 @@ namespace WindowsFormsApp
                     matrix.RotateAt((float)degrees, origin);
 
                     var path2 = new GraphicsPath();
-                    path2.AddString(string.Format("{0:0.##}", length), Context.Font.FontFamily, (int)Context.Font.Style, Context.Font.SizeInPoints * size, origin, format);
+                    path2.AddString(string.Format("{0:0.##}", length), context.Font().FontFamily, (int)context.Font().Style, context.Font().SizeInPoints * size, origin, format);
                     path2.Transform(matrix);
 
                     path.AddPath(path2, false);

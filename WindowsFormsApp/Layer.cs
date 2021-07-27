@@ -1,40 +1,39 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
 namespace WindowsFormsApp
 {
-    public class Layer
+    public abstract class Layer : IDisposable
     {
-        public Context Context { get; }
-        public Image Bitmap { get; set; }
         public Color BackColor { get; set; } = Color.Transparent;
         public SmoothingMode SmoothingMode { get; set; } = SmoothingMode.HighQuality;
 
-        protected IEnumerable<Action<Graphics>> Steps { get; set; }
+        public GraphicsController Controller { protected get; set; }
 
-        public Layer(Context context)
-        {
-            Context = context;
-        }
+        public Image Bitmap { get; protected set; }
 
-        public void Update(Size clientSize, Region clip)
+        public virtual void Update()
         {
-            Bitmap?.Dispose();
-            Bitmap = new Bitmap(clientSize.Width, clientSize.Height);
+            if (Bitmap == null)
+            {
+                Bitmap = new Bitmap(Controller.BitmapSize.Width, Controller.BitmapSize.Height);
+            }
 
             using (var g = Graphics.FromImage(Bitmap))
             {
-                g.Clip = clip;
                 g.SmoothingMode = SmoothingMode;
                 g.Clear(BackColor);
 
-                foreach (var step in Steps)
-                {
-                    step(g);
-                }
+                Draw(g);
             }
         }
+
+        public void Dispose()
+        {
+            Bitmap?.Dispose();
+        }
+
+        protected abstract void Draw(Graphics g);
     }
 }

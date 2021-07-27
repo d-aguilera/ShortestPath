@@ -53,6 +53,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="GraphicsController.cs" />
     <Compile Include="Layer2.cs" />
     <Compile Include="Layer1.cs" />
     <Compile Include="Layer0.cs" />

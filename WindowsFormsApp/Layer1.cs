@@ -8,24 +8,22 @@ namespace WindowsFormsApp
 {
     public class Layer1 : Layer
     {
-        public Layer1(Context context) : base(context)
+        protected override void Draw(Graphics g)
         {
-            Steps = new Action<Graphics>[]
-            {
-                DrawShortestPath,
-            };
+            DrawShortestPath(g);
         }
 
         private void DrawShortestPath(Graphics g)
         {
-            var path = new GraphicsPath();
+            var context = Controller.Context;
 
-            if (Context.Source == null)
+            if (context.Source == null)
             {
                 return;
             }
 
-            var queue = new Queue<Vertex>(new[] { Context.Source });
+            var queue = new Queue<Vertex>(new[] { context.Source });
+            var path = new GraphicsPath();
 
             while (queue.Count > 0)
             {
@@ -35,10 +33,10 @@ namespace WindowsFormsApp
                 {
                     foreach (var next in current.Next)
                     {
-                        var x1 = Context.Zoom + current.X * Context.Zoom;
-                        var y1 = Context.Zoom + current.Y * Context.Zoom;
-                        var x2 = Context.Zoom + next.X * Context.Zoom;
-                        var y2 = Context.Zoom + next.Y * Context.Zoom;
+                        var x1 = context.Zoom + current.X * context.Zoom;
+                        var y1 = context.Zoom + current.Y * context.Zoom;
+                        var x2 = context.Zoom + next.X * context.Zoom;
+                        var y2 = context.Zoom + next.Y * context.Zoom;
 
                         path.StartFigure();
                         path.AddLine((float)x1, (float)y1, (float)x2, (float)y2);

@@ -7,26 +7,30 @@ namespace WindowsFormsApp
 {
     public class Layer0 : Layer
     {
-        public Layer0(Context context) : base(context)
+        public override void Update()
         {
-            Steps = new Action<Graphics>[]
-            {
-                DrawConnectors,
-            };
+            BackColor = Controller.Context.BackColor();
+            base.Update();
+        }
+
+        protected override void Draw(Graphics g)
+        {
+            DrawConnectors(g);
         }
 
         private void DrawConnectors(Graphics g)
         {
+            var context = Controller.Context;
             var path = new GraphicsPath();
 
-            foreach (var vertex in Context.Graph.Where(v => v.Next != null))
+            foreach (var vertex in context.Graph.Where(v => v.Next != null))
             {
                 foreach (var next in vertex.Next)
                 {
-                    var x1 = Context.Zoom + vertex.X * Context.Zoom;
-                    var y1 = Context.Zoom + vertex.Y * Context.Zoom;
-                    var x2 = Context.Zoom + next.X * Context.Zoom;
-                    var y2 = Context.Zoom + next.Y * Context.Zoom;
+                    var x1 = context.Zoom + vertex.X * context.Zoom;
+                    var y1 = context.Zoom + vertex.Y * context.Zoom;
+                    var x2 = context.Zoom + next.X * context.Zoom;
+                    var y2 = context.Zoom + next.Y * context.Zoom;
 
                     path.StartFigure();
                     path.AddLine((float)x1, (float)y1, (float)x2, (float)y2);

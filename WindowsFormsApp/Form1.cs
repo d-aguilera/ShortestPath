@@ -10,32 +10,20 @@ namespace WindowsFormsApp
     {
         private static Random random = new Random();
         private static ShortestPathAlgo algo = new DijkstraAlgo();
-        private static Context Context = new Context();
-
-        private Layer[] layers;
-        private Image bitmap;
+        private static Context context = new Context();
+        private static GraphicsController controller = new GraphicsController(context);
 
         public Form1()
         {
             InitializeComponent();
 
-            Context.Font = Font;
+            context.BackColor = () => BackColor;
+            context.Font = () => Font;
+            context.ClientSize = () => ClientSize;
 
-            layers = new Layer[]
-            {
-                new Layer0(Context)
-                {
-                    BackColor = Color.Yellow,
-                },
-                new Layer1(Context)
-                {
-                    BackColor = Color.Blue,
-                },
-                new Layer2(Context)
-                {
-                    BackColor = Color.Transparent,
-                },
-            };
+            controller.AddLayer(new Layer0());
+            controller.AddLayer(new Layer1());
+            controller.AddLayer(new Layer2());
 
             Randomize();
             Recalc();
@@ -45,59 +33,19 @@ namespace WindowsFormsApp
 
         private void Randomize()
         {
-            Context.Graph = CreateGraph();
-            Context.Target = Context.Graph.Skip(random.Next(Context.Graph.Count)).First();
+            context.Graph = CreateGraph();
+            context.Target = context.Graph.Skip(random.Next(context.Graph.Count)).First();
         }
 
         private void Recalc()
         {
-            algo.Process(Context.Graph, Context.Target);
+            algo.Process(context.Graph, context.Target);
 
-            Context.Source = null;
+            context.Source = null;
 
-            var clip = new Region(ClientRectangle);
+            controller.UpdateLayers();
 
-            UpdateLayers(clip);
-            DrawBitmap(clip);
-        }
-
-        private void UpdateLayers(Region clip)
-        {
-            foreach (var layer in layers)
-            {
-                layer.Update(ClientSize, clip);
-            }
-
-            UpdateBitmap(clip);
-        }
-
-        private void UpdateBitmap(Region clip)
-        {
-            bitmap?.Dispose();
-            bitmap = new Bitmap(ClientSize.Width, ClientSize.Height);
-
-            using (var g = Graphics.FromImage(bitmap))
-            {
-                g.Clip = clip;
-                foreach (var layer in layers)
-                {
-                    g.DrawImage(layer.Bitmap, 0, 0);
-                }
-            }
-        }
-
-        private void DrawBitmap(Region clip)
-        {
-            using (var g = Graphics.FromHwnd(Handle))
-            {
-                DrawBitmap(clip, g);
-            }
-        }
-
-        private void DrawBitmap(Region clip, Graphics g)
-        {
-            g.Clip = clip;
-            g.DrawImage(bitmap, 0, 0);
+            DrawBitmap();
         }
 
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
@@ -110,7 +58,6 @@ namespace WindowsFormsApp
         {
             var clip = new Region(e.ClipRectangle);
 
-            UpdateLayers(clip);
             DrawBitmap(clip, e.Graphics);
         }
 
@@ -128,7 +75,7 @@ namespace WindowsFormsApp
                 return;
             }
 
-            Context.Target = newTarget;
+            context.Target = newTarget;
 
             Recalc();
         }
@@ -142,27 +89,41 @@ namespace WindowsFormsApp
 
             var newSource = FindVertex(e.X, e.Y);
 
-            if (newSource == null || newSource == Context.Source)
+            if (newSource == null || newSource == context.Source)
             {
                 return;
             }
 
-            Context.Source = newSource;
+            context.Source = newSource;
 
+            controller.Layers[1].Update();
+            controller.UpdateBitmap();
+
+            DrawBitmap();
+        }
+
+        private void DrawBitmap()
+        {
             var clip = new Region(ClientRectangle);
 
-            layers[1].Update(ClientSize, clip);
+            using (var g = Graphics.FromHwnd(Handle))
+            {
+                DrawBitmap(clip, g);
+            }
+        }
 
-            UpdateBitmap(clip);
-            DrawBitmap(clip);
+        private void DrawBitmap(Region clip, Graphics g)
+        {
+            g.Clip = clip;
+            g.DrawImage(controller.Bitmap, 0, 0);
         }
 
         private Vertex FindVertex(int x, int y)
         {
-            var x1 = Convert.ToInt32(x / Context.Zoom - 1);
-            var y1 = Convert.ToInt32(y / Context.Zoom - 1);
+            var x1 = Convert.ToInt32(x / context.Zoom - 1);
+            var y1 = Convert.ToInt32(y / context.Zoom - 1);
 
-            return Context.Graph[x1, y1];
+            return context.Graph[x1, y1];
         }
 
         private static Graph CreateGraph()
