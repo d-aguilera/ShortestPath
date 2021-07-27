@@ -12,13 +12,13 @@ namespace WindowsFormsApp
         private readonly CancellationTokenSource updateLoop;
         private readonly Thread updateThread;
 
-        protected GraphicsController Controller { get; set; }
+        protected LayerController Controller { get; set; }
 
         public Image Bitmap { get; }
         public Color BackColor { get; set; } = Color.Transparent;
         public SmoothingMode SmoothingMode { get; set; } = SmoothingMode.HighQuality;
 
-        public Layer(GraphicsController controller)
+        public Layer(LayerController controller)
         {
             Controller = controller;
             Bitmap = new Bitmap(Controller.BitmapSize.Width, Controller.BitmapSize.Height);

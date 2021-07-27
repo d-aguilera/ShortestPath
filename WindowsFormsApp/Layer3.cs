@@ -4,7 +4,7 @@ namespace WindowsFormsApp
 {
     public class Layer3 : Layer
     {
-        public Layer3(GraphicsController controller) : base(controller)
+        public Layer3(LayerController controller) : base(controller)
         {
         }
 

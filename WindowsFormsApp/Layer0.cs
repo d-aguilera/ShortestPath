@@ -7,7 +7,7 @@ namespace WindowsFormsApp
 {
     public class Layer0 : Layer
     {
-        public Layer0(GraphicsController controller) : base(controller)
+        public Layer0(LayerController controller) : base(controller)
         {
             BackColor = Controller.Context.BackColor();
         }

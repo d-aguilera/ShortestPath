@@ -13,7 +13,7 @@ namespace WindowsFormsApp
         private static ShortestPathAlgo algo = new DijkstraAlgo();
         private static Context context = new Context();
 
-        private GraphicsController controller;
+        private LayerController controller;
 
         public Form1()
         {
@@ -24,7 +24,7 @@ namespace WindowsFormsApp
             context.BackColor = () => BackColor;
             context.Font = () => Font;
 
-            controller = new GraphicsController(context);
+            controller = new LayerController(context);
             controller.AddLayer(new Layer0(controller));
             controller.AddLayer(new Layer1(controller));
             controller.AddLayer(new Layer2(controller));

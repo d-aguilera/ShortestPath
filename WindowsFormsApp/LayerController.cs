@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace WindowsFormsApp
 {
-    public class GraphicsController : IDisposable, IComponent
+    public class LayerController : IDisposable, IComponent
     {
         public Context Context { get; }
 
@@ -15,7 +15,7 @@ namespace WindowsFormsApp
         public Size BitmapSize { get; private set; }
         public List<Layer> Layers { get; private set; }
 
-        public GraphicsController(Context context)
+        public LayerController(Context context)
         {
             Context = context;
 
