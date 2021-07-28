@@ -10,7 +10,7 @@ namespace WindowsFormsApp
     public partial class Form1 : Form
     {
         private static Random random = new Random();
-        private static ShortestPathAlgo algo = new DijkstraAlgo();
+        private static ShortestPathAlgo algo = new DijkstraWithQueueAlgo();
         private static Context context = new Context();
 
         private LayerController controller;
