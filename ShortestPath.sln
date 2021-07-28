@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShortestPath.Common", "Comm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormsApp", "WindowsFormsApp\WindowsFormsApp.csproj", "{3458E54B-6E28-4962-A520-ADA5DB9829A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataStructures.FibonacciHeap", "FibonacciHeap\DataStructures.FibonacciHeap.csproj", "{1278ECC2-37FB-4CF0-9F0B-935F24160A48}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{3458E54B-6E28-4962-A520-ADA5DB9829A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3458E54B-6E28-4962-A520-ADA5DB9829A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3458E54B-6E28-4962-A520-ADA5DB9829A7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1278ECC2-37FB-4CF0-9F0B-935F24160A48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1278ECC2-37FB-4CF0-9F0B-935F24160A48}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1278ECC2-37FB-4CF0-9F0B-935F24160A48}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1278ECC2-37FB-4CF0-9F0B-935F24160A48}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
