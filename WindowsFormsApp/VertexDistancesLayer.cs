@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace WindowsFormsApp
 {
-    public class Layer4 : Layer
+    public class VertexDistancesLayer : Layer
     {
         protected override void Draw(Graphics g)
         {

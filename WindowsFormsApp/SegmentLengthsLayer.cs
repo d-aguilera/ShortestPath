@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace WindowsFormsApp
 {
-    public class Layer6 : Layer
+    public class SegmentLengthsLayer : Layer
     {
         protected override void Draw(Graphics g)
         {

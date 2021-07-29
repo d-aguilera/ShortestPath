@@ -6,7 +6,7 @@ using ShortestPath;
 
 namespace WindowsFormsApp
 {
-    public class Layer0 : Layer
+    public class ShortPathLayer : Layer
     {
         protected override void Draw(Graphics g)
         {

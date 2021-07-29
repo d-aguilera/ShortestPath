@@ -2,7 +2,7 @@
 
 namespace WindowsFormsApp
 {
-    public class Layer3 : Layer
+    public class TargetLayer : Layer
     {
         protected override void Draw(Graphics g)
         {

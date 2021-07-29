@@ -57,13 +57,13 @@
     </Compile>
     <Compile Include="IDrawStrategy.cs" />
     <Compile Include="LayerController.cs" />
-    <Compile Include="Layer6.cs" />
-    <Compile Include="Layer5.cs" />
-    <Compile Include="Layer4.cs" />
-    <Compile Include="Layer3.cs" />
-    <Compile Include="Layer2.cs" />
-    <Compile Include="Layer0.cs" />
-    <Compile Include="Layer1.cs" />
+    <Compile Include="SegmentLengthsLayer.cs" />
+    <Compile Include="ArrowsLayer.cs" />
+    <Compile Include="VertexDistancesLayer.cs" />
+    <Compile Include="TargetLayer.cs" />
+    <Compile Include="VerticesLayer.cs" />
+    <Compile Include="ShortPathLayer.cs" />
+    <Compile Include="SegmentsLayer.cs" />
     <Compile Include="Layer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

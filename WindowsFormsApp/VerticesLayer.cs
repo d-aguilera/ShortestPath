@@ -3,7 +3,7 @@ using System.Drawing.Drawing2D;
 
 namespace WindowsFormsApp
 {
-    public class Layer2 : Layer
+    public class VerticesLayer : Layer
     {
         protected override void Draw(Graphics g)
         {

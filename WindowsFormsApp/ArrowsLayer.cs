@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace WindowsFormsApp
 {
-    public class Layer5 : Layer
+    public class ArrowsLayer : Layer
     {
         protected override void Draw(Graphics g)
         {
