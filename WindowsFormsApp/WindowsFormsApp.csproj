@@ -48,7 +48,7 @@
   <ItemGroup>
     <Compile Include="Context.cs" />
     <Compile Include="DrawStrategy.cs" />
-    <Compile Include="ForegroundThreadDrawStrategy.cs" />
+    <Compile Include="DrawStrategies\ForegroundThreadDrawStrategy.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -57,18 +57,18 @@
     </Compile>
     <Compile Include="IDrawStrategy.cs" />
     <Compile Include="LayerController.cs" />
-    <Compile Include="SegmentLengthsLayer.cs" />
-    <Compile Include="ArrowsLayer.cs" />
-    <Compile Include="VertexDistancesLayer.cs" />
-    <Compile Include="TargetLayer.cs" />
-    <Compile Include="VerticesLayer.cs" />
-    <Compile Include="ShortPathLayer.cs" />
-    <Compile Include="SegmentsLayer.cs" />
+    <Compile Include="Layers\SegmentLengthsLayer.cs" />
+    <Compile Include="Layers\ArrowsLayer.cs" />
+    <Compile Include="Layers\VertexDistancesLayer.cs" />
+    <Compile Include="Layers\TargetLayer.cs" />
+    <Compile Include="Layers\VerticesLayer.cs" />
+    <Compile Include="Layers\ShortPathLayer.cs" />
+    <Compile Include="Layers\SegmentsLayer.cs" />
     <Compile Include="Layer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SimpleDrawStrategy.cs" />
-    <Compile Include="ThreadPoolDrawStrategy.cs" />
+    <Compile Include="DrawStrategies\SimpleDrawStrategy.cs" />
+    <Compile Include="DrawStrategies\ThreadPoolDrawStrategy.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
