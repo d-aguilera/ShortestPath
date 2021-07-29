@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ShortestPath.Common
+namespace ShortestPath
 {
     public class SortedQueue<T, TSort, TKey>
     {

@@ -1,6 +1,4 @@
-﻿using ShortestPath.Common;
-
-namespace ShortestPath
+﻿namespace ShortestPath
 {
     public class DijkstraWithQueueAlgo : DijkstraAlgo
     {
