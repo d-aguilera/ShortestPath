@@ -1,57 +1,41 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ShortestPath.Common;
+﻿using ShortestPath.Common;
 
 namespace ShortestPath
 {
-    public class DijkstraWithQueueAlgo : ShortestPathAlgo
+    public class DijkstraWithQueueAlgo : DijkstraAlgo
     {
-        public override void Process(Graph graph, Vertex target)
+        private SortedQueue<Vertex, double, int> Queue;
+
+        protected override void CreateQueue()
         {
-            var queue = new SortedQueue<Vertex, double, int>(
+            Queue = new SortedQueue<Vertex, double, int>(
                 v => v.DistanceToTarget,
                 (v, d) => v.DistanceToTarget = d,
                 v => v.Id
             );
+        }
 
-            foreach (var vertex in graph)
+        protected override bool QueueIsNotEmpty() => Queue.Count > 0;
+
+        protected override void Enqueue(Vertex target)
+        {
+            Queue.Enqueue(target);
+        }
+
+        protected override Vertex Dequeue()
+        {
+            return Queue.Dequeue();
+        }
+
+        protected override void SetNeighborDistance(Vertex neighbor, double newDistance)
+        {
+            if (Queue.Contains(neighbor))
             {
-                vertex.DistanceToTarget = vertex == target ? 0.0 : double.MaxValue;
-                vertex.Next = new List<Vertex>();
-                queue.Enqueue(vertex);
+                Queue.UpdateSortKey(neighbor, newDistance);
             }
-
-            while (queue.Count > 0)
+            else
             {
-                var u = queue.Dequeue();
-
-                foreach (var v in u.Neighbors)
-                {
-                    var distanceToCurrent = v.DistanceTo(u);
-                    var newDistance = u.DistanceToTarget + distanceToCurrent;
-                    var oldDistance = v.DistanceToTarget;
-
-                    if (newDistance > oldDistance)
-                    {
-                        continue;
-                    }
-
-                    if (newDistance < oldDistance)
-                    {
-                        if (queue.Contains(v))
-                        {
-                            queue.UpdateSortKey(v, newDistance);
-                        }
-                        else
-                        {
-                            v.DistanceToTarget = newDistance;
-                        }
-
-                        v.Next.Clear();
-                    }
-
-                    v.Next.Add(u);
-                }
+                neighbor.DistanceToTarget = newDistance;
             }
         }
     }

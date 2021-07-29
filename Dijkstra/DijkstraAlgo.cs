@@ -1,50 +1,69 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace ShortestPath
 {
-    public class DijkstraAlgo : ShortestPathAlgo
+    public abstract class DijkstraAlgo : ShortestPathAlgo
     {
         public override void Process(Graph graph, Vertex target)
         {
-            var queue = new List<Vertex>();
-
             foreach (var vertex in graph)
             {
                 vertex.DistanceToTarget = double.MaxValue;
                 vertex.Next = null;
-                queue.Add(vertex);
             }
 
+            var visited = new HashSet<int>();
+            CreateQueue();
+
+            Enqueue(target);
             target.DistanceToTarget = 0.0;
 
-            while (queue.Count > 0)
+            while (QueueIsNotEmpty())
             {
-                var current = queue.First(x => x.DistanceToTarget == queue.Min(x2 => x2.DistanceToTarget));
-
-                queue.Remove(current);
+                var current = Dequeue();
 
                 foreach (var neighbor in current.Neighbors)
                 {
                     var distanceToCurrent = neighbor.DistanceTo(current);
                     var newDistance = current.DistanceToTarget + distanceToCurrent;
-                    if (newDistance < double.MaxValue)
+                    var oldDistance = neighbor.DistanceToTarget;
+
+                    if (newDistance > oldDistance)
                     {
-                        if (newDistance < neighbor.DistanceToTarget)
+                        continue;
+                    }
+
+                    if (newDistance < oldDistance)
+                    {
+                        SetNeighborDistance(neighbor, newDistance);
+
+                        neighbor.Next = new List<Vertex>
                         {
-                            neighbor.DistanceToTarget = newDistance;
-                            neighbor.Next = new List<Vertex>
-                            {
-                                current,
-                            };
-                        }
-                        else if (newDistance == neighbor.DistanceToTarget)
-                        {
-                            neighbor.Next.Add(current);
-                        }
+                            current,
+                        };
+                    }
+                    else
+                    {
+                        neighbor.Next.Add(current);
+                    }
+
+                    if (!visited.Contains(neighbor.Id))
+                    {
+                        Enqueue(neighbor);
+                        visited.Add(neighbor.Id);
                     }
                 }
             }
         }
+
+        protected abstract void CreateQueue();
+
+        protected abstract bool QueueIsNotEmpty();
+
+        protected abstract void Enqueue(Vertex target);
+
+        protected abstract Vertex Dequeue();
+
+        protected abstract void SetNeighborDistance(Vertex neighbor, double newDistance);
     }
 }
