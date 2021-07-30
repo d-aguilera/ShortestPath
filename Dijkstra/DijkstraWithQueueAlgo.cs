@@ -6,12 +6,17 @@
 
         protected override void CreateQueue()
         {
-            Queue = new SortedQueue<Vertex, double, string>(
-                v => v.DistanceToTarget,
-                (v, d) => v.DistanceToTarget = d,
-                v => v.ToString()
-            );
+            Queue = new SortedQueue<Vertex, double, string>(GetDistanceToTarget, SetDistanceToTarget, GetVertexKey);
         }
+
+        private double GetDistanceToTarget(Vertex vertex) => vertex.DistanceToTarget;
+
+        private void SetDistanceToTarget(Vertex vertex, double newDistance)
+        {
+            vertex.DistanceToTarget = newDistance;
+        }
+
+        private string GetVertexKey(Vertex vertex) => vertex.ToString();
 
         protected override bool QueueIsNotEmpty() => Queue.Count > 0;
 
