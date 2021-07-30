@@ -25,16 +25,14 @@ namespace ShortestPath
         public Action<T, TSort> SetSort { get; }
         public Func<T, TKey> GetKey { get; }
 
-        public bool Contains(T item)
+        public bool ContainsKey(TKey key)
         {
-            if (item == null)
+            if (key == null)
             {
-                throw new ArgumentNullException(nameof(item));
+                throw new ArgumentNullException(nameof(key));
             }
 
-            var itemKey = GetKey(item);
-
-            return allItems.ContainsKey(itemKey);
+            return allItems.ContainsKey(key);
         }
 
         public void Enqueue(T item)

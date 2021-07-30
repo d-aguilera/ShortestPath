@@ -27,7 +27,7 @@
 
         protected override void SetNeighborDistance(Vertex neighbor, double newDistance)
         {
-            if (Queue.Contains(neighbor))
+            if (Queue.ContainsKey(neighbor.Id))
             {
                 Queue.UpdateSortKey(neighbor, newDistance);
             }
