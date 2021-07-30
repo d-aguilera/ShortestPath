@@ -12,7 +12,7 @@ namespace ShortestPath
                 vertex.Next = null;
             }
 
-            var visited = new HashSet<int>();
+            var visited = new HashSet<string>();
             CreateQueue();
 
             Enqueue(target);
@@ -47,10 +47,11 @@ namespace ShortestPath
                         neighbor.Next.Add(current);
                     }
 
-                    if (!visited.Contains(neighbor.Id))
+                    var neighborKey = neighbor.ToString();
+                    if (!visited.Contains(neighborKey))
                     {
                         Enqueue(neighbor);
-                        visited.Add(neighbor.Id);
+                        visited.Add(neighborKey);
                     }
                 }
             }

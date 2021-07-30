@@ -5,14 +5,11 @@ namespace ShortestPath
 {
     public class Vertex : IEquatable<Vertex>
     {
-        private static int LastSequence;
-
         public float X { get; set; }
         public float Y { get; set; }
         public double DistanceToTarget { get; set; }
         public IList<Vertex> Next { get; set; }
         public IList<Vertex> Neighbors { get; set; }
-        public int Id { get; }
 
         public Vertex() : this(0f, 0f)
         {
@@ -22,7 +19,6 @@ namespace ShortestPath
         {
             X = x;
             Y = y;
-            Id = ++LastSequence;
         }
 
         public static string GetKey(float x, float y)

@@ -2,14 +2,14 @@
 {
     public class DijkstraWithQueueAlgo : DijkstraAlgo
     {
-        private SortedQueue<Vertex, double, int> Queue;
+        private SortedQueue<Vertex, double, string> Queue;
 
         protected override void CreateQueue()
         {
-            Queue = new SortedQueue<Vertex, double, int>(
+            Queue = new SortedQueue<Vertex, double, string>(
                 v => v.DistanceToTarget,
                 (v, d) => v.DistanceToTarget = d,
-                v => v.Id
+                v => v.ToString()
             );
         }
 
@@ -27,7 +27,7 @@
 
         protected override void SetNeighborDistance(Vertex neighbor, double newDistance)
         {
-            if (Queue.ContainsKey(neighbor.Id))
+            if (Queue.ContainsKey(neighbor.ToString()))
             {
                 Queue.UpdateSortKey(neighbor, newDistance);
             }
