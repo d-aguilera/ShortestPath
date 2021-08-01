@@ -9,7 +9,7 @@ namespace ShortestPath
         public float Y { get; set; }
         public double DistanceToTarget { get; set; }
         public IList<Vertex> Next { get; set; }
-        public IList<Vertex> Neighbors { get; set; }
+        public IList<Edge> Edges { get; set; }
 
         public Vertex() : this(0f, 0f)
         {

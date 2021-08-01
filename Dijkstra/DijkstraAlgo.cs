@@ -22,9 +22,10 @@ namespace ShortestPath
             {
                 var current = Dequeue();
 
-                foreach (var neighbor in current.Neighbors)
+                foreach (var segment in current.Edges)
                 {
-                    var distanceToCurrent = neighbor.DistanceTo(current);
+                    var neighbor = segment.To;
+                    var distanceToCurrent = segment.Cost;
                     var newDistance = current.DistanceToTarget + distanceToCurrent;
                     var oldDistance = neighbor.DistanceToTarget;
 

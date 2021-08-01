@@ -47,12 +47,13 @@ namespace ShortestPath
                 }
             }
 
-            // initialize neighbors
+            // initialize vertex connections
             foreach (var vertex in graph)
             {
-                vertex.Neighbors = offsets
+                vertex.Edges = offsets
                     .Select(offset => graph[vertex.X + offset.X, vertex.Y + offset.Y])
                     .Where(v => v != null)
+                    .Select(v => new Edge(v, v.DistanceTo(vertex)))
                     .ToList();
             }
 
