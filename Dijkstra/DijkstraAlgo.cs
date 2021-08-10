@@ -29,12 +29,12 @@ namespace ShortestPath
                     var newDistance = current.DistanceToTarget + distanceToCurrent;
                     var oldDistance = neighbor.DistanceToTarget;
 
-                    if (newDistance > oldDistance)
+                    if ((float)newDistance > (float)oldDistance)
                     {
                         continue;
                     }
 
-                    if (newDistance < oldDistance)
+                    if ((float)newDistance < (float)oldDistance)
                     {
                         SetNeighborDistance(neighbor, newDistance);
 
