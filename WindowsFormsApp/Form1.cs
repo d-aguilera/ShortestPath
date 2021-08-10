@@ -89,13 +89,13 @@ namespace WindowsFormsApp
         private void InitLayers()
         {
             controller = new LayerController(context);
-            controller.AddLayer(new ShortPathLayer("shortPath"));
-            // controller.AddLayer(new SegmentsLayer("segments"));
-            controller.AddLayer(new VerticesLayer("vertices"));
-            controller.AddLayer(new TargetLayer("target"));
-            // controller.AddLayer(new VertexDistancesLayer("vertexDistances"));
-            // controller.AddLayer(new ArrowsLayer("arrows"));
-            // controller.AddLayer(new SegmentLengthsLayer("segmentLengths"));
+            controller.AddLayer(new ShortPathLayer("shortPath", Color.Red, 15.0f));
+            // controller.AddLayer(new SegmentsLayer("segments", Color.Black));
+            controller.AddLayer(new VerticesLayer("vertices", Color.White, Color.Black));
+            controller.AddLayer(new TargetLayer("target", Color.Yellow, Color.Black));
+            // controller.AddLayer(new VertexDistancesLayer("vertexDistances", Color.Black));
+            // controller.AddLayer(new ArrowsLayer("arrows", Color.Black));
+            // controller.AddLayer(new SegmentLengthsLayer("segmentLengths", Color.Black));
 
             components = new Container();
             components.Add(controller);

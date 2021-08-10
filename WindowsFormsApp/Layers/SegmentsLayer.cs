@@ -7,9 +7,12 @@ namespace WindowsFormsApp
 {
     public class SegmentsLayer : Layer
     {
-        public SegmentsLayer(string name) : base(name)
+        public SegmentsLayer(string name, Color lineColor) : base(name)
         {
+            LineColor = lineColor;
         }
+
+        public Color LineColor { get; }
 
         protected override void Draw(Graphics g)
         {
@@ -31,7 +34,10 @@ namespace WindowsFormsApp
                 }
             }
 
-            g.DrawPath(Pens.Black, path);
+            using (var pen = new Pen(LineColor))
+            {
+                g.DrawPath(pen, path);
+            }
         }
     }
 }

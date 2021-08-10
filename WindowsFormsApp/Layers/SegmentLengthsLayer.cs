@@ -7,9 +7,12 @@ namespace WindowsFormsApp
 {
     public class SegmentLengthsLayer : Layer
     {
-        public SegmentLengthsLayer(string name) : base(name)
+        public SegmentLengthsLayer(string name, Color textColor) : base(name)
         {
+            TextColor = textColor;
         }
+
+        public Color TextColor { get; }
 
         protected override void Draw(Graphics g)
         {
@@ -53,7 +56,10 @@ namespace WindowsFormsApp
                 }
             }
 
-            g.FillPath(Brushes.Black, path);
+            using (var brush = new SolidBrush(TextColor))
+            {
+                g.FillPath(brush, path);
+            }
         }
     }
 }

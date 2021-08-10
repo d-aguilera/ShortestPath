@@ -8,9 +8,12 @@ namespace WindowsFormsApp
 {
     public class ArrowsLayer : Layer
     {
-        public ArrowsLayer(string name) : base(name)
+        public ArrowsLayer(string name, Color fillColor) : base(name)
         {
+            FillColor = fillColor;
         }
+
+        public Color FillColor { get; }
 
         protected override void Draw(Graphics g)
         {
@@ -79,7 +82,10 @@ namespace WindowsFormsApp
                 }
             }
 
-            g.FillPath(Brushes.Black, path);
+            using (var brush = new SolidBrush(FillColor))
+            {
+                g.FillPath(brush, path);
+            }
         }
     }
 }

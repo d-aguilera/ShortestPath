@@ -6,9 +6,12 @@ namespace WindowsFormsApp
 {
     public class VertexDistancesLayer : Layer
     {
-        public VertexDistancesLayer(string name) : base(name)
+        public VertexDistancesLayer(string name, Color textColor) : base(name)
         {
+            TextColor = textColor;
         }
+
+        public Color TextColor { get; }
 
         protected override void Draw(Graphics g)
         {
@@ -30,7 +33,10 @@ namespace WindowsFormsApp
                 path.AddString(distance, context.Font().FontFamily, (int)context.Font().Style, context.Font().SizeInPoints * 1.5f, origin, format);
             }
 
-            g.FillPath(Brushes.Black, path);
+            using (var brush = new SolidBrush(TextColor))
+            {
+                g.FillPath(brush, path);
+            }
         }
     }
 }

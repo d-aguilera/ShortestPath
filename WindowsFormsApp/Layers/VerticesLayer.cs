@@ -5,9 +5,14 @@ namespace WindowsFormsApp
 {
     public class VerticesLayer : Layer
     {
-        public VerticesLayer(string name) : base(name)
+        public VerticesLayer(string name, Color fillColor, Color borderColor) : base(name)
         {
+            FillColor = fillColor;
+            BorderColor = borderColor;
         }
+
+        public Color FillColor { get; }
+        public Color BorderColor { get; }
 
         protected override void Draw(Graphics g)
         {
@@ -25,8 +30,12 @@ namespace WindowsFormsApp
                 path.CloseFigure();
             }
 
-            g.FillPath(Brushes.White, path);
-            g.DrawPath(Pens.Black, path);
+            using (var brush = new SolidBrush(FillColor))
+            using (var pen = new Pen(BorderColor))
+            {
+                g.FillPath(brush, path);
+                g.DrawPath(pen, path);
+            }
         }
     }
 }
