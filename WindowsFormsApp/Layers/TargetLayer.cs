@@ -4,6 +4,10 @@ namespace WindowsFormsApp
 {
     public class TargetLayer : Layer
     {
+        public TargetLayer(string name) : base(name)
+        {
+        }
+
         protected override void Draw(Graphics g)
         {
             var context = Controller.Context;

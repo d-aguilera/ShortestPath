@@ -8,6 +8,10 @@ namespace WindowsFormsApp
 {
     public class ShortPathLayer : Layer
     {
+        public ShortPathLayer(string name) : base(name)
+        {
+        }
+
         protected override void Draw(Graphics g)
         {
             var context = Controller.Context;

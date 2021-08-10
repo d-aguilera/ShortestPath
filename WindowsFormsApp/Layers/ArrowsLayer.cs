@@ -8,6 +8,10 @@ namespace WindowsFormsApp
 {
     public class ArrowsLayer : Layer
     {
+        public ArrowsLayer(string name) : base(name)
+        {
+        }
+
         protected override void Draw(Graphics g)
         {
             var context = Controller.Context;

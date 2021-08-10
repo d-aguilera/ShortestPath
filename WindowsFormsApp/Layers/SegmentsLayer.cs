@@ -7,6 +7,10 @@ namespace WindowsFormsApp
 {
     public class SegmentsLayer : Layer
     {
+        public SegmentsLayer(string name) : base(name)
+        {
+        }
+
         protected override void Draw(Graphics g)
         {
             var context = Controller.Context;

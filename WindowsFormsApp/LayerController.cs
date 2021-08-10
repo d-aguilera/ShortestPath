@@ -30,9 +30,9 @@ namespace WindowsFormsApp
             Bitmap = new Bitmap(BitmapSize.Width, BitmapSize.Height);
         }
 
-        public void AddLayer(string name, Layer layer)
+        public void AddLayer(Layer layer)
         {
-            layers.Add(name, layer);
+            layers.Add(layer.Name, layer);
             layer.Controller = this;
         }
 

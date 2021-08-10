@@ -7,6 +7,10 @@ namespace WindowsFormsApp
 {
     public class SegmentLengthsLayer : Layer
     {
+        public SegmentLengthsLayer(string name) : base(name)
+        {
+        }
+
         protected override void Draw(Graphics g)
         {
             const float size = 1.4f;

@@ -5,6 +5,10 @@ namespace WindowsFormsApp
 {
     public class VerticesLayer : Layer
     {
+        public VerticesLayer(string name) : base(name)
+        {
+        }
+
         protected override void Draw(Graphics g)
         {
             var context = Controller.Context;

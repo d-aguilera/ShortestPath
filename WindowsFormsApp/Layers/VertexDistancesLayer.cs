@@ -6,6 +6,10 @@ namespace WindowsFormsApp
 {
     public class VertexDistancesLayer : Layer
     {
+        public VertexDistancesLayer(string name) : base(name)
+        {
+        }
+
         protected override void Draw(Graphics g)
         {
             var context = Controller.Context;

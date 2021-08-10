@@ -23,8 +23,14 @@ namespace WindowsFormsApp
             }
         }
 
+        public string Name { get; }
         public Image Bitmap { get; private set; }
         public SmoothingMode SmoothingMode { get; set; } = SmoothingMode.HighQuality;
+
+        public Layer(string name)
+        {
+            Name = name;
+        }
 
         public void Update()
         {
