@@ -11,7 +11,7 @@ namespace ShortestPath
         public IList<Vertex> Next { get; set; }
         public IList<Edge> Edges { get; set; }
 
-        public Vertex() : this(0f, 0f)
+        public Vertex() : this(0.0f, 0.0f)
         {
         }
 
@@ -33,7 +33,7 @@ namespace ShortestPath
 
         public static double Distance(Vertex from, Vertex to)
         {
-            return Math.Sqrt(Math.Pow(to.X - from.X, 2) + Math.Pow(to.Y - from.Y, 2));
+            return Math.Sqrt(Math.Pow((double)to.X - from.X, 2.0) + Math.Pow((double)to.Y - from.Y, 2.0));
         }
 
         public override string ToString()

@@ -19,7 +19,7 @@ namespace ShortestPath
                 .Concat(new[] { -1, 0, 1 }.SelectMany(y => new[] { -1, 0, 1 }.Select(x => new PointF(x, y))))
                 .Concat(new[] { -2, 2 }.SelectMany(y => new[] { -1, 1 }.Select(x => new PointF(x, y))))
                 .Concat(new[] { -1, 1 }.SelectMany(y => new[] { -2, 2 }.Select(x => new PointF(x, y))))
-                .Where(p => p.X != 0 || p.Y != 0)
+                .Where(p => p.X != 0.0f || p.Y != 0.0f)
                 .ToArray();
 
             // add all vertices
@@ -51,7 +51,7 @@ namespace ShortestPath
             foreach (var vertex in graph)
             {
                 vertex.Edges = offsets
-                    .Select(offset => graph[vertex.X + offset.X, vertex.Y + offset.Y])
+                    .Select(offset => graph[(float)((double)vertex.X + offset.X), (float)((double)vertex.Y + offset.Y)])
                     .Where(v => v != null)
                     .Select(v => new Edge(v, v.DistanceTo(vertex)))
                     .ToList();
