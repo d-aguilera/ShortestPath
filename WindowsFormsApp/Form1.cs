@@ -107,6 +107,11 @@ namespace WindowsFormsApp
 
             context.Source = null;
 
+            ReDraw();
+        }
+
+        private void ReDraw()
+        {
             controller.UpdateLayers();
 
             DrawBitmap();
@@ -134,6 +139,20 @@ namespace WindowsFormsApp
             var y1 = Convert.ToInt32(y / context.Zoom - 1);
 
             return context.Graph[x1, y1];
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData != Keys.Oemplus && e.KeyData != Keys.OemMinus)
+            {
+                return;
+            }
+
+            e.SuppressKeyPress = true;
+
+            context.Zoom *= e.KeyData == Keys.Oemplus ? 1.25 : 0.8;
+
+            ReDraw();
         }
     }
 }
