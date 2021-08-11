@@ -8,14 +8,14 @@ namespace WindowsFormsApp
 {
     public class ShortPathLayer : Layer
     {
-        public ShortPathLayer(string name, Color penColor, float penWidth) : base(name)
+        public ShortPathLayer(string name, Color penColor, int penWidthPercent) : base(name)
         {
             PenColor = penColor;
-            PenWidth = penWidth;
+            PenWidth = penWidthPercent;
         }
 
         public Color PenColor { get; }
-        public float PenWidth { get; }
+        public int PenWidth { get; }
 
         protected override void Draw(Graphics g)
         {
@@ -56,7 +56,7 @@ namespace WindowsFormsApp
 
             using (var pen = new Pen(PenColor))
             {
-                pen.Width = PenWidth;
+                pen.Width = (float)(PenWidth * context.Zoom / 200.0);
                 g.DrawPath(pen, path);
             }
         }

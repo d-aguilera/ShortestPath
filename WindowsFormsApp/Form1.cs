@@ -89,7 +89,7 @@ namespace WindowsFormsApp
         private void InitLayers()
         {
             controller = new LayerController(context);
-            controller.AddLayer(new ShortPathLayer("shortPath", Color.Red, 15.0f));
+            controller.AddLayer(new ShortPathLayer("shortPath", Color.Red, 60));
             // controller.AddLayer(new SegmentsLayer("segments", Color.Black));
             controller.AddLayer(new VerticesLayer("vertices", Color.White, Color.Black));
             controller.AddLayer(new TargetLayer("target", Color.Yellow, Color.Black));
