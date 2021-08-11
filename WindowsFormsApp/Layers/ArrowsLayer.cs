@@ -18,8 +18,8 @@ namespace WindowsFormsApp
         protected override void Draw(Graphics g)
         {
             var context = Controller.Context;
-            var size = context.Zoom / 8.0;
-            var gap = context.Zoom / 3.0;
+            var size = context.Zoom / 8.5;
+            var gap = context.Zoom / 2.9;
 
             var path = new GraphicsPath();
 
