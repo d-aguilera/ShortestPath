@@ -32,10 +32,25 @@ namespace WindowsFormsApp
 
         protected virtual void UpdateInternal()
         {
+            var size = Layer.Context.ClientRectangle().Size;
+
+            if (Layer.Bitmap != null && Layer.Bitmap.Size != size)
+            {
+                Layer.Bitmap.Dispose();
+                Layer.Bitmap = null;
+            }
+
+            if (Layer.Bitmap == null)
+            {
+                Layer.Bitmap = new Bitmap(size.Width, size.Height);
+            }
+
             using (var g = Graphics.FromImage(Layer.Bitmap))
             {
                 g.SmoothingMode = Layer.SmoothingMode;
                 g.Clear(Color.Transparent);
+                g.PageUnit = Layer.Context.PageUnit;
+                g.PageScale = Layer.Context.PageScale;
 
                 Draw(g);
             }

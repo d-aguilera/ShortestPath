@@ -37,13 +37,8 @@ namespace WindowsFormsApp
                 {
                     foreach (var next in current.Next)
                     {
-                        var x1 = context.Zoom + current.X * context.Zoom;
-                        var y1 = context.Zoom + current.Y * context.Zoom;
-                        var x2 = context.Zoom + next.X * context.Zoom;
-                        var y2 = context.Zoom + next.Y * context.Zoom;
-
                         path.StartFigure();
-                        path.AddLine((float)x1, (float)y1, (float)x2, (float)y2);
+                        path.AddLine(current.X, current.Y, next.X, next.Y);
                         path.CloseFigure();
 
                         if (!queue.Contains(next))
@@ -56,7 +51,7 @@ namespace WindowsFormsApp
 
             using (var pen = new Pen(PenColor))
             {
-                pen.Width = (float)(PenWidth * context.Zoom / 200.0);
+                pen.Width = (float)(PenWidth / 200.0);
                 g.DrawPath(pen, path);
             }
         }

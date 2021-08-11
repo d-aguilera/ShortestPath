@@ -17,14 +17,13 @@ namespace WindowsFormsApp
             {
                 controller = value;
 
-                Bitmap = new Bitmap(value.BitmapSize.Width, value.BitmapSize.Height);
-
-                drawStrategy = new ForegroundThreadDrawStrategy(this, Draw);
+                drawStrategy = new ForegroundThreadDrawStrategy(this, DrawLayer);
             }
         }
 
         public string Name { get; }
-        public Image Bitmap { get; private set; }
+        public Context Context => Controller?.Context;
+        public Image Bitmap { get; set; }
         public SmoothingMode SmoothingMode { get; set; } = SmoothingMode.HighQuality;
 
         public Layer(string name)
@@ -50,6 +49,11 @@ namespace WindowsFormsApp
             }
 
             Bitmap.Dispose();
+        }
+
+        private void DrawLayer(Graphics g)
+        {
+            Draw(g);
         }
 
         protected abstract void Draw(Graphics g);

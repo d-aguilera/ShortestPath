@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
-using System.Linq;
 using System.Threading;
 
 namespace WindowsFormsApp
@@ -12,7 +11,6 @@ namespace WindowsFormsApp
     {
         private readonly Dictionary<string, Layer> layers = new Dictionary<string, Layer>();
 
-        public Size BitmapSize { get; }
         public Context Context { get; }
 
         public IReadOnlyDictionary<string, Layer> Layers => new ReadOnlyDictionary<string, Layer>(layers);
@@ -22,12 +20,6 @@ namespace WindowsFormsApp
         public LayerController(Context context)
         {
             Context = context;
-
-            var width = Context.Graph.Max(v => v.X) * Context.Zoom + 2.0 * Context.Zoom;
-            var height = Context.Graph.Max(v => v.Y) * Context.Zoom + 2.0 * Context.Zoom;
-            BitmapSize = new Size((int)width, (int)height);
-
-            Bitmap = new Bitmap(BitmapSize.Width, BitmapSize.Height);
         }
 
         public void AddLayer(Layer layer)
@@ -55,8 +47,22 @@ namespace WindowsFormsApp
 
         public void UpdateBitmap()
         {
+            var size = Context.ClientRectangle().Size;
+
+            if (Bitmap != null && Bitmap.Size != size)
+            {
+                Bitmap.Dispose();
+                Bitmap = null;
+            }
+
+            if (Bitmap == null)
+            {
+                Bitmap = new Bitmap(size.Width, size.Height);
+            }
+
             using (var g = Graphics.FromImage(Bitmap))
             {
+                g.Clip = new Region(Context.ClientRectangle());
                 g.Clear(Context.BackColor());
                 foreach (var layer in layers.Values)
                 {

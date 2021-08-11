@@ -6,11 +6,13 @@ namespace WindowsFormsApp
 {
     public class Context
     {
-        public double Zoom { get; set; } = 60.0;
+        public GraphicsUnit PageUnit { get; set; } = GraphicsUnit.Pixel;
+        public float PageScale { get; set; } = 60f;
         public Graph Graph { get; set; }
         public Vertex Target { get; set; }
         public Vertex Source { get; set; }
 
+        public Func<Rectangle> ClientRectangle { get; set; }
         public Func<Color> BackColor { get; set; }
         public Func<Font> Font { get; set; }
     }

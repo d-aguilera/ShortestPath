@@ -11,15 +11,32 @@ namespace WindowsFormsApp
         private static ShortestPathAlgo algo = new DijkstraWithQueueAlgo();
         private static Context context = new Context();
 
+        public double pageUnitRatio;
+
         private LayerController controller;
 
         public Form1()
         {
             InitializeComponent();
+            InitPageUnitRatio();
             Randomize();
             InitContext();
             InitLayers();
             Recalc();
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData != Keys.Oemplus && e.KeyData != Keys.OemMinus)
+            {
+                return;
+            }
+
+            e.SuppressKeyPress = true;
+
+            context.PageScale *= (float)(e.KeyData == Keys.Oemplus ? 1.25 : 0.8);
+
+            ReDraw();
         }
 
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
@@ -30,7 +47,7 @@ namespace WindowsFormsApp
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            DrawBitmap(new Region(e.ClipRectangle), e.Graphics);
+            DrawBitmap(e.ClipRectangle, e.Graphics);
         }
 
         private void Form1_MouseClick(object sender, MouseEventArgs e)
@@ -74,6 +91,11 @@ namespace WindowsFormsApp
             DrawBitmap();
         }
 
+        private void InitPageUnitRatio()
+        {
+            pageUnitRatio = GetPageUnitRatio(context.PageUnit, DeviceDpi);
+        }
+
         private void Randomize()
         {
             context.Graph = GraphHelper.CreateGraph();
@@ -82,6 +104,7 @@ namespace WindowsFormsApp
 
         private void InitContext()
         {
+            context.ClientRectangle = () => ClientRectangle;
             context.BackColor = () => BackColor;
             context.Font = () => Font;
         }
@@ -119,40 +142,36 @@ namespace WindowsFormsApp
 
         private void DrawBitmap()
         {
-            var clip = new Region(ClientRectangle);
-
-            using (var g = Graphics.FromHwnd(Handle))
+            using (var g = CreateGraphics())
             {
-                DrawBitmap(clip, g);
+                DrawBitmap(ClientRectangle, g);
             }
         }
 
-        private void DrawBitmap(Region clip, Graphics g)
+        private void DrawBitmap(Rectangle clip, Graphics g)
         {
-            g.Clip = clip;
+            g.Clip = new Region(clip);
             g.DrawImage(controller.Bitmap, 0, 0);
         }
 
         private Vertex FindVertex(int x, int y)
         {
-            var x1 = Convert.ToInt32(x / context.Zoom - 1);
-            var y1 = Convert.ToInt32(y / context.Zoom - 1);
+            var x1 = Convert.ToInt32(x * pageUnitRatio / context.PageScale);
+            var y1 = Convert.ToInt32(y * pageUnitRatio / context.PageScale);
 
             return context.Graph[x1, y1];
         }
 
-        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        private static double GetPageUnitRatio(GraphicsUnit unit, int deviceDpi)
         {
-            if (e.KeyData != Keys.Oemplus && e.KeyData != Keys.OemMinus)
+            switch (unit)
             {
-                return;
+                case GraphicsUnit.Inch: return deviceDpi;
+                case GraphicsUnit.Millimeter: return 25.4 / deviceDpi;
+                case GraphicsUnit.Point: return 72.0 / deviceDpi;
+                case GraphicsUnit.Document: return 300.0 / deviceDpi;
+                default: return 1.0;
             }
-
-            e.SuppressKeyPress = true;
-
-            context.Zoom *= e.KeyData == Keys.Oemplus ? 1.25 : 0.8;
-
-            ReDraw();
         }
     }
 }

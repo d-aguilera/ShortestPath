@@ -17,21 +17,21 @@ namespace WindowsFormsApp
         protected override void Draw(Graphics g)
         {
             var context = Controller.Context;
-            var size = context.Zoom / 2.0;
+            var size = 0.5f;
             var path = new GraphicsPath();
 
             foreach (var vertex in context.Graph)
             {
-                var x1 = context.Zoom + vertex.X * context.Zoom - size / 2.0;
-                var y1 = context.Zoom + vertex.Y * context.Zoom - size / 2.0;
+                var x1 = (float)(vertex.X - size / 2.0);
+                var y1 = (float)(vertex.Y - size / 2.0);
 
                 path.StartFigure();
-                path.AddEllipse((float)x1, (float)y1, (float)size, (float)size);
+                path.AddEllipse(x1, y1, size, size);
                 path.CloseFigure();
             }
 
             using (var brush = new SolidBrush(FillColor))
-            using (var pen = new Pen(BorderColor))
+            using (var pen = new Pen(BorderColor, 0.03f))
             {
                 g.FillPath(brush, path);
                 g.DrawPath(pen, path);

@@ -18,8 +18,8 @@ namespace WindowsFormsApp
         protected override void Draw(Graphics g)
         {
             var context = Controller.Context;
-            var size = context.Zoom / 8.5;
-            var gap = context.Zoom / 2.9;
+            var size = 0.125;
+            var gap = 0.35;
 
             var path = new GraphicsPath();
 
@@ -29,14 +29,10 @@ namespace WindowsFormsApp
             {
                 foreach (var next in vertex.Next)
                 {
-                    var x1 = context.Zoom + vertex.X * context.Zoom;
-                    var y1 = context.Zoom + vertex.Y * context.Zoom;
-                    var x2 = context.Zoom + next.X * context.Zoom;
-                    var y2 = context.Zoom + next.Y * context.Zoom;
 
-                    var origin = new PointF((float)x1, (float)y1);
+                    var origin = new PointF(vertex.X, vertex.Y);
 
-                    var angle1 = Math.Atan2(y2 - y1, x2 - x1);
+                    var angle1 = Math.Atan2(next.Y - origin.Y, next.X - origin.X);
 
                     if (!stash.ContainsKey(angle1))
                     {

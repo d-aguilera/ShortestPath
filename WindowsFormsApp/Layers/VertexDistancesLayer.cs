@@ -26,11 +26,9 @@ namespace WindowsFormsApp
 
             foreach (var vertex in context.Graph.Where(v => v.DistanceToTarget < double.MaxValue))
             {
-                var x1 = context.Zoom + vertex.X * context.Zoom;
-                var y1 = context.Zoom + vertex.Y * context.Zoom;
-                var origin = new PointF((float)x1, (float)y1);
+                var origin = new PointF(vertex.X, vertex.Y);
                 var distance = string.Format("{0:0.#}", vertex.DistanceToTarget);
-                path.AddString(distance, context.Font().FontFamily, (int)context.Font().Style, (float)(context.Font().SizeInPoints * context.Zoom / 40.0), origin, format);
+                path.AddString(distance, context.Font().FontFamily, (int)context.Font().Style, (float)(context.Font().SizeInPoints / 40.0), origin, format);
             }
 
             using (var brush = new SolidBrush(TextColor))

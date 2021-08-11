@@ -23,18 +23,13 @@ namespace WindowsFormsApp
             {
                 foreach (var next in vertex.Next)
                 {
-                    var x1 = context.Zoom + vertex.X * context.Zoom;
-                    var y1 = context.Zoom + vertex.Y * context.Zoom;
-                    var x2 = context.Zoom + next.X * context.Zoom;
-                    var y2 = context.Zoom + next.Y * context.Zoom;
-
                     path.StartFigure();
-                    path.AddLine((float)x1, (float)y1, (float)x2, (float)y2);
+                    path.AddLine(vertex.X, vertex.Y, next.X, next.Y);
                     path.CloseFigure();
                 }
             }
 
-            using (var pen = new Pen(LineColor))
+            using (var pen = new Pen(LineColor, 0.025f))
             {
                 g.DrawPath(pen, path);
             }

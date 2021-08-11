@@ -16,15 +16,21 @@ namespace WindowsFormsApp
         protected override void Draw(Graphics g)
         {
             var context = Controller.Context;
-            var size = context.Zoom / 2.0;
-            var x1 = context.Zoom + context.Target.X * context.Zoom - size / 2.0;
-            var y1 = context.Zoom + context.Target.Y * context.Zoom - size / 2.0;
+
+            var innerSize = 0.5f;
+            var x1 = (float)(context.Target.X - innerSize / 2.0);
+            var y1 = (float)(context.Target.Y - innerSize / 2.0);
+
+            var outerSize = 0.75f;
+            var x2 = (float)(context.Target.X - outerSize / 2.0);
+            var y2 = (float)(context.Target.Y - outerSize / 2.0);
 
             using (var brush = new SolidBrush(FillColor))
-            using (var pen = new Pen(BorderColor))
+            using (var pen = new Pen(BorderColor, 0.05f))
             {
-                g.FillEllipse(brush, (float)x1, (float)y1, (float)size, (float)size);
-                g.DrawEllipse(pen, (float)x1, (float)y1, (float)size, (float)size);
+                g.FillEllipse(brush, x1, y1, innerSize, innerSize);
+                g.DrawEllipse(pen, x1, y1, innerSize, innerSize);
+                g.DrawEllipse(pen, x2, y2, outerSize, outerSize);
             }
         }
     }
