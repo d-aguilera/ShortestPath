@@ -23,8 +23,8 @@ namespace ShortestPath
                 .ToArray();
 
             // add all vertices
-            graph.AddRange(Enumerable.Range(0, sizeY)
-                .SelectMany(y => Enumerable.Range(0, sizeX).Select(x => new Vertex(x, y))));
+            graph.AddRange(Enumerable.Range(1, sizeY)
+                .SelectMany(y => Enumerable.Range(1, sizeX).Select(x => new Vertex(x, y))));
 
             // remove some to create obstacles
             var obstacleOffsets = offsets
