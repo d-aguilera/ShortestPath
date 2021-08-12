@@ -6,6 +6,8 @@ namespace WindowsFormsApp
 {
     public class Context
     {
+        public double Left { get; set; } = 1.0;
+        public double Top { get; set; } = 1.0;
         public GraphicsUnit PageUnit { get; set; } = GraphicsUnit.Pixel;
         public float PageScale { get; set; } = 60f;
         public Graph Graph { get; set; }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
@@ -10,6 +11,7 @@ namespace WindowsFormsApp
     {
         private static ShortestPathAlgo algo = new DijkstraWithQueueAlgo();
         private static Context context = new Context();
+        private static IDictionary<Keys, Action<Context>> keyHandlers;
 
         public double pageUnitRatio;
 
@@ -18,6 +20,7 @@ namespace WindowsFormsApp
         public Form1()
         {
             InitializeComponent();
+            InitializeKeyHandlers();
             InitPageUnitRatio();
             Randomize();
             InitContext();
@@ -27,16 +30,14 @@ namespace WindowsFormsApp
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyData != Keys.Oemplus && e.KeyData != Keys.OemMinus)
+            if (!keyHandlers.ContainsKey(e.KeyData))
             {
                 return;
             }
 
+            keyHandlers[e.KeyData](context);
+
             e.SuppressKeyPress = true;
-
-            context.PageScale *= (float)(e.KeyData == Keys.Oemplus ? 1.25 : 0.8);
-
-            ReDraw();
         }
 
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
@@ -48,6 +49,11 @@ namespace WindowsFormsApp
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
             DrawBitmap(e.ClipRectangle, e.Graphics);
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            controller.UpdateLayers();
         }
 
         private void Form1_MouseClick(object sender, MouseEventArgs e)
@@ -89,6 +95,55 @@ namespace WindowsFormsApp
             controller.UpdateBitmap();
 
             DrawBitmap();
+        }
+
+        private void InitializeKeyHandlers()
+        {
+            keyHandlers = new Dictionary<Keys, Action<Context>>
+            {
+                {
+                    Keys.OemMinus, ctx =>
+                    {
+                        ctx.PageScale *= 0.8f;
+                        ReDraw();
+                    }
+                },
+                {
+                    Keys.Oemplus, ctx =>
+                    {
+                        ctx.PageScale *= 1.25f;
+                        ReDraw();
+                    }
+                },
+                {
+                    Keys.Up, ctx =>
+                    {
+                        ctx.Top++;
+                        ReDraw();
+                    }
+                },
+                {
+                    Keys.Right, ctx =>
+                    {
+                        ctx.Left--;
+                        ReDraw();
+                    }
+                },
+                {
+                    Keys.Down, ctx =>
+                    {
+                        ctx.Top--;
+                        ReDraw();
+                    }
+                },
+                {
+                    Keys.Left, ctx =>
+                    {
+                        ctx.Left++;
+                        ReDraw();
+                    }
+                },
+            };
         }
 
         private void InitPageUnitRatio()
@@ -156,8 +211,8 @@ namespace WindowsFormsApp
 
         private Vertex FindVertex(int x, int y)
         {
-            var x1 = Convert.ToInt32(x * pageUnitRatio / context.PageScale);
-            var y1 = Convert.ToInt32(y * pageUnitRatio / context.PageScale);
+            var x1 = Convert.ToInt32(x * pageUnitRatio / context.PageScale - context.Left);
+            var y1 = Convert.ToInt32(y * pageUnitRatio / context.PageScale - context.Top);
 
             return context.Graph[x1, y1];
         }

@@ -51,6 +51,7 @@ namespace WindowsFormsApp
                 g.Clear(Color.Transparent);
                 g.PageUnit = Layer.Context.PageUnit;
                 g.PageScale = Layer.Context.PageScale;
+                g.TranslateTransform((float)Layer.Context.Left, (float)Layer.Context.Top);
 
                 Draw(g);
             }
